@@ -1,20 +1,27 @@
 import React from 'react';
+import PropTypes from 'prop-types'
 
 class Book extends React.Component {
+  static propTypes = {
+    updateShelf :  PropTypes.func.isRequired,
+    details : PropTypes.shape({
+      title: PropTypes.string.isRequired
+    })
+  }
   render() {
-    console.log("##############", this.props.details, "***************", this.props.details.imageLinks);
+    const {details, updateShelf } = this.props; 
     return (
       <div className="book">
         <div className="book-top">
           <div className="book-cover" style={{
-            width: 128, height: 188, backgroundImage: `url("${this.props.details.imageLinks ?
-              (this.props.details.imageLinks.thumbnail ?
-                this.props.details.imageLinks.thumbnail : '')
+            width: 128, height: 188, backgroundImage: `url("${details.imageLinks ?
+              (details.imageLinks.thumbnail ?
+                details.imageLinks.thumbnail : '')
               : ''}")`
           }}></div>
           <div className="book-shelf-changer">
-            <select defaultValue={this.props.details.shelf ? this.props.details.shelf : 'none'} onChange={(e) => {
-              this.props.updateShelf(this.props.details, e.target.value)
+            <select defaultValue={details.shelf ? details.shelf : 'none'} onChange={(e) => {
+              updateShelf(details, e.target.value)
             }}>
               <option value="move" disabled>Move to...</option>
               <option value="currentlyReading">Currently Reading</option>
@@ -24,8 +31,8 @@ class Book extends React.Component {
             </select>
           </div>
         </div>
-        <div className="book-title">{this.props.details.title}</div>
-        <div className="book-authors">{this.props.details.authors ? this.props.details.authors.map(element => `${element}`).join(' ,'): ''}</div>
+        <div className="book-title">{details.title}</div>
+        <div className="book-authors">{details.authors ? details.authors.map(element => `${element}`).join(' ,'): ''}</div>
       </div>
     )
   }

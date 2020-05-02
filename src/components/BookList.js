@@ -1,9 +1,27 @@
 import React, { Component } from 'react'
-import BookShelf from './BookShelf';
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import BookShelf from './BookShelf';
+
 
 export default class BookList extends Component {
-
+  static propTypes = {
+    shelfs: PropTypes.shape({
+      currentlyReading : PropTypes.shape({
+        books: PropTypes.object.isRequired,
+        name: PropTypes.string.isRequired
+      }),
+      wantToRead : PropTypes.shape({
+        books: PropTypes.object.isRequired,
+        name: PropTypes.string.isRequired
+      }),
+      read : PropTypes.shape({
+        books: PropTypes.object.isRequired,
+        name: PropTypes.string.isRequired
+      }),
+    }),
+    updateShelf : PropTypes.func.isRequired 
+  }
   render() {
     const {
       shelfs,
