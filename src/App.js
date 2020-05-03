@@ -27,7 +27,9 @@ class BooksApp extends React.Component {
 
   async componentDidMount() {
     const result = await getAll();
-    const shelfs  = this.state.shelfs; 
+    const shelfs = {
+      ...this.state.shelfs
+    };
     result.forEach(element => {
       shelfs[element.shelf].books[element.id] = element;  
     });
@@ -37,7 +39,10 @@ class BooksApp extends React.Component {
   }
 
   updateShelf = async(book, shelf) => {
-    const shelfs = this.state.shelfs;
+    const shelfs = {
+      ...this.state.shelfs
+    };
+
     Object.keys(shelfs).forEach((element)=> {
         delete shelfs[element].books[book.id]; 
     });
@@ -56,6 +61,7 @@ class BooksApp extends React.Component {
       <div className="app">
         <Route exact path='/search' render={({history}) => (
           <SearchBooks 
+            shelfs ={{...this.state.shelfs}}
             updateShelf = {async (book, shelf) => {
               await this.updateShelf(book, shelf);
               history.push('/');
@@ -63,7 +69,7 @@ class BooksApp extends React.Component {
             />
         )} />
         <Route exact path='/' render={() => (
-         <BookList shelfs ={this.state.shelfs} updateShelf= {this.updateShelf}/>
+         <BookList shelfs ={{...this.state.shelfs}} updateShelf= {this.updateShelf}/>
         )} />
       </div>
     )
