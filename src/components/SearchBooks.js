@@ -9,22 +9,58 @@ import { Link } from 'react-router-dom';
 export class SearchBooks extends Component {
   state = {
     query : '',
-    searchResults: [],
+    searchResults: {},
   }
   static propTypes ={
+    shelfs: PropTypes.shape({
+      currentlyReading : PropTypes.shape({
+        books: PropTypes.object.isRequired,
+        name: PropTypes.string.isRequired
+      }),
+      wantToRead : PropTypes.shape({
+        books: PropTypes.object.isRequired,
+        name: PropTypes.string.isRequired
+      }),
+      read : PropTypes.shape({
+        books: PropTypes.object.isRequired,
+        name: PropTypes.string.isRequired
+      }),
+    }),
     updateShelf: PropTypes.func.isRequired
   }
-  searchBooks = async (query) =>{
-    const results = await search(query);
+  searchBooks = async (query, shelfs) =>{
+    let results = await search(query);
+
+    if(!Array.isArray(results)){
+      results = [];
+    }
+    //Formatting the search results
+    const searchResults = results.reduce((returnVal, element) => {
+      returnVal[element.id] = element;
+      return returnVal;
+    }, {});
+    //Checking the 
+    const shelfValues = Object.keys(shelfs).reduce((returnVal, element) => {
+      returnVal = {
+        ...returnVal,
+        ...shelfs[element].books
+      };
+      return returnVal;
+    }, {});
+
     this.setState({
-      searchResults: Array.isArray(results) ? results : [],
+      searchResults: {
+        ...searchResults,
+        ...shelfValues
+      },
     })
   }
-  onChange = (query) => {
+
+  onChange = (query, shelfs) => {
     this.setState(() => ({
       query: query.trim()
     }))
-    this.searchBooks(query);
+    this.searchBooks(query, shelfs);
   }
   
   render() {
@@ -42,13 +78,13 @@ export class SearchBooks extends Component {
                   you don't find a specific author or title. Every search is limited by search terms.
                 */}
             <input type="text" value = {this.state.query} onChange={(e) => { 
-              this.onChange(e.target.value)
+              this.onChange(e.target.value, this.props.shelfs)
             }} placeholder="Search by title or author" />
 
           </div>
         </div>
         <div className="search-books-results">
-          <BooksGrid books={this.state.searchResults} updateShelf={this.props.updateShelf} />
+          <BooksGrid books={Object.values(this.state.searchResults)} updateShelf={this.props.updateShelf} shelfs={this.props.shelfs} />
         </div>
       </div>
     )
